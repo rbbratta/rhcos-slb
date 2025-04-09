@@ -71,19 +71,35 @@ oc delete nncp slb
 
 ### 3. Disable old services without reboot
 
-**TODO**: simplify, one or the other.
+**TODO**: simplify
 
 
-Untested, check systemd syntax
+Write `"primary"` and `"secondary"` somewhere in  `/etc/NetworkManager/system-connections/` so the `init-interfaces.sh`  `grep` catches it
 
+
+MCD hack.
 ```shell
-ansible-playbook -v -i inventory.json patch_setup_ovs.yaml
-ansible-playbook -v -i inventory.json disable-init-interfaces.yaml
+
+for f in $(oc get pods -n openshift-machine-config-operator  -l k8s-app=machine-config-daemon --no-headers -o custom-columns=N:.metadata.name) ; do echo $f ; oc exec -n openshift-machine-config-operator $f -c machine-config-daemon -- chroot /rootfs bash -c "printf '%s\n' '# primary' '# secondary' > /etc/NetworkManager/system-connections/disable-init-interfaces" ; done
 
 ```
 
-- [patch_setup_ovs.yaml](patch_setup_ovs.yaml)
-- [disable-init-interfaces.yaml](disable-init-interfaces.yaml)
+OR disable the `ExecStart` with systemd override.
+
+```ini
+# /etc/systemd/system/setup-ovs.service.d/override.conf
+[Service]
+ExecStart=
+ExecStart=echo setup-ovs disabled
+```
+
+
+
+```shell
+
+for f in $(oc get pods -n openshift-machine-config-operator  -l k8s-app=machine-config-daemon --no-headers -o custom-columns=N:.metadata.name) ; do echo $f ; oc exec -n openshift-machine-config-operator $f -c machine-config-daemon -- chroot /rootfs bash -c "mkdir -p /etc/systemd/system/setup-ovs.service.d && printf '%s\n' '[Service]' 'ExecStart=' 'ExecStart=echo setup-ovs disabled' > /etc/systemd/system/setup-ovs.service.d/override.conf && systemctl daemon-reload" ; done
+
+```
 
 
 ### 4. Patch MTU Migration
@@ -92,22 +108,19 @@ until https://github.com/openshift/machine-config-operator/pull/4932 is merged
 
 Untested, check systemd syntax
 
-```yaml
-- name: Create override configuration file for mtu-migration.service
-  copy:
-    dest: /etc/systemd/system/mtu-migration.service.d/override.conf
-    content: |
-      [Unit]
-      After=wait-for-primary-ip.service
+
+```ini
+# /etc/systemd/system/mtu-migration.service.d/override.conf
+[Unit]
+After=wait-for-primary-ip.service
 ```
 
 
 ```shell
-ansible-playbook -v -i inventory.json patch_mtu_migration.yaml
+
+for f in $(oc get pods -n openshift-machine-config-operator  -l k8s-app=machine-config-daemon --no-headers -o custom-columns=N:.metadata.name) ; do echo $f ; oc exec -n openshift-machine-config-operator $f -c machine-config-daemon -- chroot /rootfs bash -c "mkdir -p /etc/systemd/system/mtu-migration.service.d && printf '%s\n' '[Unit]' 'After=wait-for-primary-ip.service' > /etc/systemd/system/mtu-migration.service.d/override.conf && systemctl daemon-reload" ; done
 
 ```
-
-- [patch_mtu_migration.yaml](patch_mtu_migration.yaml)
 
 ### 5. Start migration.
 
