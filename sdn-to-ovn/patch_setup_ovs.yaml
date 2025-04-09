@@ -1,0 +1,27 @@
+---
+- hosts: all
+  become: yes
+  strategy: free
+  # speedup
+  gather_facts: no
+
+  tasks:
+    - name: Create directory for setup-ovs.service drop-in files
+      file:
+        path: /etc/systemd/system/setup-ovs.service.d
+        state: directory
+        mode: '0755'
+
+    - name: Create override configuration file for setup-ovs.service
+      copy:
+        dest: /etc/systemd/system/setup-ovs.service.d/override.conf
+        content: |
+          [Service]
+          ExecStart=
+          ExecStart=echo setup-ovs disabled
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Reload systemd to apply new configuration
+      command: systemctl daemon-reload
