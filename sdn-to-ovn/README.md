@@ -57,7 +57,7 @@ Notes:
 
 ### 2. Delete the SLB NNCP
 
-**TODO**: does this cause reboot?
+This should not cause a reboot.
 
 In testing my NNCP failed to apply due to bug, so not a valid test.  https://issues.redhat.com/browse/RHEL-86035
 
@@ -80,7 +80,10 @@ Write `"primary"` and `"secondary"` somewhere in  `/etc/NetworkManager/system-co
 MCD hack.
 ```shell
 
-for f in $(oc get pods -n openshift-machine-config-operator  -l k8s-app=machine-config-daemon --no-headers -o custom-columns=N:.metadata.name) ; do echo $f ; oc exec -n openshift-machine-config-operator $f -c machine-config-daemon -- chroot /rootfs bash -c "printf '%s\n' '# primary' '# secondary' > /etc/NetworkManager/system-connections/disable-init-interfaces" ; done
+for f in $(oc get pods -n openshift-machine-config-operator -l k8s-app=machine-config-daemon --no-headers -o custom-columns=N:.metadata.name); do
+  echo $f
+  oc exec -n openshift-machine-config-operator $f -c machine-config-daemon -- chroot /rootfs bash -c "printf '%s\n' '# primary' '# secondary' | tee /etc/NetworkManager/system-connections/disable-init-interfaces"
+done
 
 ```
 
@@ -97,7 +100,10 @@ ExecStart=echo setup-ovs disabled
 
 ```shell
 
-for f in $(oc get pods -n openshift-machine-config-operator  -l k8s-app=machine-config-daemon --no-headers -o custom-columns=N:.metadata.name) ; do echo $f ; oc exec -n openshift-machine-config-operator $f -c machine-config-daemon -- chroot /rootfs bash -c "mkdir -p /etc/systemd/system/setup-ovs.service.d && printf '%s\n' '[Service]' 'ExecStart=' 'ExecStart=echo setup-ovs disabled' > /etc/systemd/system/setup-ovs.service.d/override.conf && systemctl daemon-reload" ; done
+for f in $(oc get pods -n openshift-machine-config-operator -l k8s-app=machine-config-daemon --no-headers -o custom-columns=N:.metadata.name); do
+  echo $f
+  oc exec -n openshift-machine-config-operator $f -c machine-config-daemon -- chroot /rootfs bash -c "mkdir -p /etc/systemd/system/setup-ovs.service.d && printf '%s\n' '[Service]' 'ExecStart=' 'ExecStart=echo setup-ovs disabled' | tee /etc/systemd/system/setup-ovs.service.d/override.conf && systemctl daemon-reload"
+done
 
 ```
 
@@ -118,9 +124,24 @@ After=wait-for-primary-ip.service
 
 ```shell
 
-for f in $(oc get pods -n openshift-machine-config-operator  -l k8s-app=machine-config-daemon --no-headers -o custom-columns=N:.metadata.name) ; do echo $f ; oc exec -n openshift-machine-config-operator $f -c machine-config-daemon -- chroot /rootfs bash -c "mkdir -p /etc/systemd/system/mtu-migration.service.d && printf '%s\n' '[Unit]' 'After=wait-for-primary-ip.service' > /etc/systemd/system/mtu-migration.service.d/override.conf && systemctl daemon-reload" ; done
+for f in $(oc get pods -n openshift-machine-config-operator -l k8s-app=machine-config-daemon --no-headers -o custom-columns=N:.metadata.name); do
+  echo $f
+  oc exec -n openshift-machine-config-operator $f -c machine-config-daemon -- chroot /rootfs bash -c "mkdir -p /etc/systemd/system/mtu-migration.service.d && printf '%s\n' '[Unit]' 'After=wait-for-primary-ip.service' | tee /etc/systemd/system/mtu-migration.service.d/override.conf && systemctl daemon-reload"
+done
 
 ```
+
+### 5. Apply `/etc/nmstate/openshift` MachineConfigs
+
+
+One MachineConfig per node.
+
+```shell
+
+oc apply -f 10-br-ex-master-0.yaml
+
+```
+
 
 ### 5. Start migration.
 
