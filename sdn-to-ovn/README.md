@@ -71,48 +71,16 @@ oc delete nncp slb
 
 ### 3. Disable old services without reboot
 
-**TODO**: simplify
-
 
 Write `"primary"` and `"secondary"` somewhere in  `/etc/NetworkManager/system-connections/` so the `init-interfaces.sh`  `grep` catches it
 
+[disable-init-interfaces.sh](disable-init-interfaces.sh)
 
-MCD hack.
-```shell
-
-for f in $(oc get pods -n openshift-machine-config-operator -l k8s-app=machine-config-daemon --no-headers -o custom-columns=N:.metadata.name); do
-  echo $f
-  oc exec -n openshift-machine-config-operator $f -c machine-config-daemon -- chroot /rootfs bash -c "printf '%s\n' '# primary' '# secondary' | tee /etc/NetworkManager/system-connections/disable-init-interfaces"
-done
-
-```
-
-OR disable the `ExecStart` with systemd override.
-
-```ini
-# /etc/systemd/system/setup-ovs.service.d/override.conf
-[Service]
-ExecStart=
-ExecStart=echo setup-ovs disabled
-```
-
-
-
-```shell
-
-for f in $(oc get pods -n openshift-machine-config-operator -l k8s-app=machine-config-daemon --no-headers -o custom-columns=N:.metadata.name); do
-  echo $f
-  oc exec -n openshift-machine-config-operator $f -c machine-config-daemon -- chroot /rootfs bash -c "mkdir -p /etc/systemd/system/setup-ovs.service.d && printf '%s\n' '[Service]' 'ExecStart=' 'ExecStart=echo setup-ovs disabled' | tee /etc/systemd/system/setup-ovs.service.d/override.conf && systemctl daemon-reload"
-done
-
-```
 
 
 ### 4. Patch MTU Migration
 
-until https://github.com/openshift/machine-config-operator/pull/4932 is merged
-
-Untested, check systemd syntax
+until https://issues.redhat.com//browse/OCPBUGS-53425 is backported add a systemd override to make mtu-migration service wait for an IP.
 
 
 ```ini
@@ -121,30 +89,31 @@ Untested, check systemd syntax
 After=wait-for-primary-ip.service
 ```
 
+[patch-mtu-migration.sh](patch-mtu-migration.sh)
 
-```shell
-
-for f in $(oc get pods -n openshift-machine-config-operator -l k8s-app=machine-config-daemon --no-headers -o custom-columns=N:.metadata.name); do
-  echo $f
-  oc exec -n openshift-machine-config-operator $f -c machine-config-daemon -- chroot /rootfs bash -c "mkdir -p /etc/systemd/system/mtu-migration.service.d && printf '%s\n' '[Unit]' 'After=wait-for-primary-ip.service' | tee /etc/systemd/system/mtu-migration.service.d/override.conf && systemctl daemon-reload"
-done
-
-```
 
 ### 5. Apply `/etc/nmstate/openshift` MachineConfigs
 
 
-One MachineConfig per node.
+One MachineConfig per node to keep it simple.  MachineConfigs can be combined if useful.  
 
 ```shell
 
 oc apply -f 10-br-ex-master-0.yaml
+...
+oc apply -f 10-br-ex-worker-0.yaml
+
 
 ```
 
 
 ### 5. Start migration.
 
+```shell
+
+oc patch Network.config.openshift.io cluster --type='merge' --patch '{"metadata":{"annotations":{"network.openshift.io/network-type-migration":""}},"spec":{"networkType":"OVNKubernetes"}}'
+
+```
 
 
 ### 6. delete old MachineConfigs.

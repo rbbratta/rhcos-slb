@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 for f in $(oc get pods -n openshift-machine-config-operator \
   -l k8s-app=machine-config-daemon \
   --no-headers \
