@@ -3,15 +3,15 @@
 
 ## Assumptions
 
-`setup-ovs.service` calls `/var/init-interfaces` with creates the nmconnections
+`setup-ovs.service` calls `/var/init-interfaces.sh` with creates the nmconnections
 
-`slb` NNCP creates the `brcnv` bridge.
+The `slb` NNCP creates the `brcnv` bridge with a `bond0` `balance-slb` bond.
 
 
 ## Usage
 
 
-### 1. Prepare the files
+### 1. Prepare the nmstate for each host.
 
 
 - Create the nmstate
@@ -44,7 +44,9 @@ function usage() {
 
 
 ```shell
-make-br-ex-nmstate.sh master-0 master 1500 30:d0:42:56:66:af enx30d0425666af enx30d0425666b0 enx30d0425666ae enx30d0425666af enx30d0425666b0 enx30d0425666b1
+
+make-br-ex-nmstate.sh master-0 master 1500  00:11:22:33:44:55 enx001122334455 enx101122334455 enx201122334455 enx301122334455 enx401122334455 enx501122334455
+
 ```
 
 Notes:
@@ -57,11 +59,7 @@ Notes:
 
 ### 2. Delete the SLB NNCP
 
-This should not cause a reboot.
 
-In testing my NNCP failed to apply due to bug, so not a valid test.  https://issues.redhat.com/browse/RHEL-86035
-
-Untested
 ```shell
 oc get nncp
 oc delete nncp slb
@@ -95,19 +93,22 @@ After=wait-for-primary-ip.service
 ### 5. Apply `/etc/nmstate/openshift` MachineConfigs
 
 
-One MachineConfig per node to keep it simple.  MachineConfigs can be combined if useful.  
+Apply each MachineConfig.  Writes to `/etc/nmstate/openshift` will not cause a reboot.
 
 ```shell
 
 oc apply -f 10-br-ex-master-0.yaml
+oc apply -f 10-br-ex-master-1.yaml
 ...
-oc apply -f 10-br-ex-worker-0.yaml
+oc apply -f 10-br-ex-worker-9.yaml
 
 
 ```
 
 
 ### 5. Start migration.
+
+https://docs.redhat.com/en/documentation/openshift_container_platform/4.16/html/networking/ovn-kubernetes-network-plugin#initiating-limited-live-migration_migrate-from-openshift-sdn
 
 ```shell
 
@@ -116,7 +117,7 @@ oc patch Network.config.openshift.io cluster --type='merge' --patch '{"metadata"
 ```
 
 
-### 6. delete old MachineConfigs.
+### 6. Delete old MachineConfigs.
 
 TBD
 
