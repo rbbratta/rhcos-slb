@@ -3,7 +3,7 @@
 
 ## Assumptions
 
-`setup-ovs.service` calls `/var/init-interfaces.sh` with creates the nmconnections
+`setup-ovs.service` calls `/var/init-interfaces.sh` which creates the nmconnections
 
 The `slb` NNCP creates the `brcnv` bridge with a `bond0` `balance-slb` bond.
 
@@ -50,7 +50,7 @@ make-br-ex-nmstate.sh master-0 master 1500  00:11:22:33:44:55 enx001122334455 en
 ```
 
 Notes:
-* hardcode the MTU because DHCP MTU might not propogate
+* hardcode the MTU because DHCP MTU might not propagate
 * delete old `brcnv` interface with IP, `state: absent`
 * always disable DHCP on all other interfaces
 * since we know the PRIMARY MAC, don't use `copy-from-mac:` for br-ex, hardcode
