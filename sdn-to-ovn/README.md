@@ -47,6 +47,8 @@ function usage() {
 
 ```shell
 
+# only use 'hostname -s'
+
 make-br-ex-nmstate.sh master-0 master 1500  00:11:22:33:44:55 enx001122334455 enx101122334455 enx201122334455 enx301122334455 enx401122334455 enx501122334455
 
 ```
