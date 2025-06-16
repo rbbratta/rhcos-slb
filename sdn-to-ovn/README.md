@@ -10,6 +10,8 @@ The `slb` NNCP creates the `brcnv` bridge with a `bond0` `balance-slb` bond.
 
 ## Usage
 
+## check for /usr/local/bin/nmstate-configuration.sh
+
 
 ### 1. Prepare the nmstate for each host.
 
