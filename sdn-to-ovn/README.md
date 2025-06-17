@@ -120,8 +120,16 @@ oc patch Network.config.openshift.io cluster --type='merge' --patch '{"metadata"
 
 ```
 
+### 6. Remove OpenShiftSDN `br0` bridge
 
-### 6. Delete old MachineConfigs.
+Delete the old OpenShiftSDN `br0` bridge from all the nodes.
+
+`ovs-vsctl --timeout=30 --if-exists del-br br0`
+
+[delete-br0.sh](delete-br0.sh)
+
+
+### 7. Delete old MachineConfigs.
 
 TBD
 
