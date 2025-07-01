@@ -19,7 +19,6 @@ ovn:
       state: present
 interfaces:
   - name: br-ex
-    mtu: ${MTU}
     type: ovs-bridge
     state: up
     ipv4:
@@ -40,6 +39,7 @@ interfaces:
     type: ovs-interface
     state: up
     mac-address: ${PRIMARY_MAC}
+    mtu: ${MTU}
     ipv4:
       enabled: true
       dhcp: true
