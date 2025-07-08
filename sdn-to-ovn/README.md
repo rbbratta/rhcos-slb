@@ -101,14 +101,15 @@ Apply each MachineConfig.  Writes to `/etc/nmstate/openshift` will not cause a r
 
 ```shell
 
-oc apply -f 10-br-ex-master-0.yaml
-oc apply -f 10-br-ex-master-1.yaml
+oc apply -f 20-br-ex-master-0.yaml
+oc apply -f 20-br-ex-master-1.yaml
 ...
-oc apply -f 10-br-ex-worker-9.yaml
+oc apply -f 20-br-ex-worker-9.yaml
 
 
 ```
 
+Wait for MachineConfigs to be applied
 
 ### 5. Start migration.
 

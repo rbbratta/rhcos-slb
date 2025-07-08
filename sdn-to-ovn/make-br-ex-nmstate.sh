@@ -149,13 +149,13 @@ ROLE=$1; shift
 
 BASE64_YAML=$(make_mc "$@" | yq | tee nmstate-"${ROLE}"-"${HOSTNAME}".yml | base64 -w0)
 
-cat <<EOF | tee 10-br-ex-"${ROLE}"-"${HOSTNAME}".yaml
+cat <<EOF | tee 20-br-ex-"${ROLE}"-"${HOSTNAME}".yaml
 apiVersion: machineconfiguration.openshift.io/v1
 kind: MachineConfig
 metadata:
   labels:
     machineconfiguration.openshift.io/role: ${ROLE}
-  name: 10-br-ex-${ROLE}-${HOSTNAME}
+  name: 20-br-ex-${ROLE}-${HOSTNAME}
 spec:
   config:
     ignition:
