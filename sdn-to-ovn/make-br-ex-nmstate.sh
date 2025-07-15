@@ -47,6 +47,7 @@ interfaces:
     ipv6:
       enabled: false
       dhcp: false
+      auto-route-metric: 48
   - name: brcnv
     type: ovs-interface
     state: absent
