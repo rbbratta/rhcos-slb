@@ -21,12 +21,6 @@ interfaces:
   - name: br-ex
     type: ovs-bridge
     state: up
-    ipv4:
-      enabled: false
-      dhcp: false
-    ipv6:
-      enabled: false
-      dhcp: false
     bridge:
       allow-extra-patch-ports: true
       port:
@@ -54,12 +48,6 @@ interfaces:
   - name: brcnv
     type: ovs-bridge
     state: up
-    ipv4:
-      enabled: false
-      dhcp: false
-    ipv6:
-      enabled: false
-      dhcp: false
     bridge:
       options:
         stp: false
