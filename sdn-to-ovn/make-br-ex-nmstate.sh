@@ -47,12 +47,6 @@ interfaces:
     ipv6:
       enabled: false
       dhcp: false
-  - name: br0
-    type: ovs-interface
-    state: absent
-  - name: br0
-    type: ovs-bridge
-    state: absent
   - name: brcnv
     type: ovs-interface
     state: absent
