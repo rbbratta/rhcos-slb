@@ -3,7 +3,7 @@
 
 ## Assumptions
 
-`setup-ovs.service` calls `/var/init-interfaces.sh` which creates the nmconnections
+`init-interfaces.service` calls `/var/init-interfaces.sh` which creates the nmconnections
 
 The `slb` NNCP creates the `brcnv` bridge with a `bond0` `balance-slb` bond.
 
