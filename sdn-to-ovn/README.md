@@ -7,13 +7,11 @@
 
 The `slb` NNCP creates the `brcnv` bridge with a `bond0` `balance-slb` bond.
 
-
 ## Usage
 
 ## check for /usr/local/bin/nmstate-configuration.sh
 
-
-### 1. Prepare the nmstate for each host.
+### 1. Prepare the nmstate for each host
 
 
 - Create the nmstate
@@ -44,7 +42,6 @@ function usage() {
 
 [make-br-ex-nmstate.sh](make-br-ex-nmstate.sh)
 
-
 ```shell
 
 # only use 'hostname -s'
@@ -54,11 +51,12 @@ make-br-ex-nmstate.sh master-0 master 1500  00:11:22:33:44:55 enx001122334455 en
 ```
 
 Notes:
-* hardcode the MTU because DHCP MTU might not propagate
-* delete old `brcnv` interface with IP, `state: absent`
-* always disable DHCP on all other interfaces
-* since we know the PRIMARY MAC, don't use `copy-from-mac:` for br-ex, hardcode
-* `auto-route-metric: 48` to ensure OVN-K default route always wins.
+
+- hardcode the MTU because DHCP MTU might not propagate
+- delete old `brcnv` interface with IP, `state: absent`
+- always disable DHCP on all other interfaces
+- since we know the PRIMARY MAC, don't use `copy-from-mac:` for br-ex, hardcode
+- `auto-route-metric: 48` to ensure OVN-K default route always wins.
 
 
 ### 2. Delete the SLB NNCP
@@ -70,31 +68,14 @@ oc delete nncp slb
 
 ```
 
+### 3. Pause MCP
 
-### 3. Disable old services without reboot
-
-
-Write `"primary"` and `"secondary"` somewhere in  `/etc/NetworkManager/system-connections/` so the `init-interfaces.sh`  `grep` catches it
-
-[disable-init-interfaces.sh](disable-init-interfaces.sh)
-
-
-
-### 4. Patch MTU Migration
-
-until https://issues.redhat.com//browse/OCPBUGS-53425 is backported add a systemd override to make mtu-migration service wait for an IP.
-
-
-```ini
-# /etc/systemd/system/mtu-migration.service.d/override.conf
-[Unit]
-After=wait-for-primary-ip.service
+```shell
+oc patch mcp worker --type merge --patch '{"spec":{"paused":true}}'
+oc patch mcp master --type merge --patch '{"spec":{"paused":true}}'
 ```
 
-[patch-mtu-migration.sh](patch-mtu-migration.sh)
-
-
-### 5. Apply `/etc/nmstate/openshift` MachineConfigs
+### 4. Apply `/etc/nmstate/openshift` MachineConfigs
 
 
 Apply each MachineConfig.  Writes to `/etc/nmstate/openshift` will not cause a reboot.
@@ -109,11 +90,49 @@ oc apply -f 20-br-ex-worker-9.yaml
 
 ```
 
-Wait for MachineConfigs to be applied
+### 5. Install new nmstate-configuration.sh to remove old OpenShiftSDN `br0` bridge
 
-### 5. Start migration.
+until <https://issues.redhat.com//browse/OCPBUGS-57484> is backported add a custom nmstates-configuraion script to delete the leftover
+OpenShiftSDN `br0`
 
-https://docs.redhat.com/en/documentation/openshift_container_platform/4.16/html/networking/ovn-kubernetes-network-plugin#initiating-limited-live-migration_migrate-from-openshift-sdn
+```shell
+
+oc apply -f 20-nmstate-configuration-master.yaml
+oc apply -f 20-nmstate-configuration-worker.yaml
+
+```
+
+### 6. Disable old services without reboot
+
+Disable `init-interfaces.sh` by matching the grep check for `primary` and `secondary`.
+
+```shell
+
+oc apply -f 30-disable-init-interfaces-master.yaml
+oc apply -f 30-disable-init-interfaces-worker.yaml
+
+```
+
+### 7. Patch MTU Migration
+
+until <https://issues.redhat.com/browse/OCPBUGS-53425> is backported add a systemd override to make mtu-migration service wait for an IP.
+
+```ini
+# /etc/systemd/system/mtu-migration.service.d/override.conf
+[Unit]
+After=wait-for-primary-ip.service
+```
+
+```shell
+
+oc apply -f 20-mtu-migration-master.yaml
+oc apply -f 20-mtu-migration-worker.yaml
+
+```
+
+### 8. Start migration
+
+<https://docs.redhat.com/en/documentation/openshift_container_platform/4.16/html/networking/ovn-kubernetes-network-plugin#initiating-limited-live-migration_migrate-from-openshift-sdn>
 
 ```shell
 
@@ -121,30 +140,18 @@ oc patch Network.config.openshift.io cluster --type='merge' --patch '{"metadata"
 
 ```
 
-### 6. Remove OpenShiftSDN `br0` bridge
+### 9. Unpause MCP
 
-Delete the old OpenShiftSDN `br0` bridge from all the nodes.
-
-`ovs-vsctl --timeout=30 --if-exists del-br br0`
-
-[delete-br0.sh](delete-br0.sh)
-
-
-### 7. Delete old MachineConfigs.
-
-TBD
-
-Disable capture-macs.service ?  No-op?
-
-Remove /boot/mac_addresses ?  Probably not.
-
-
-This is still required, so make a new MC to keep it before deleting the old MC.
-
-```ini
-[root@master-2 core]# cat /etc/systemd/network/50-ovs-mac-policy-none.link
-[Match]
-Driver=openvswitch
-[Link]
-
+```shell
+oc patch mcp worker --type merge --patch '{"spec":{"paused":false}}'
+oc patch mcp master --type merge --patch '{"spec":{"paused":false}}'
 ```
+
+### 10. Disable old scripts
+
+`/etc/systemd/system/init-interfaces.service` is installed by ignition, so we can just delete it.
+
+`50-gs-ovs-mac-policy-none-link-worker` is a separate MachineConfig so it can be left in place.
+
+
+
