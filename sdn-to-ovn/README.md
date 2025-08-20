@@ -151,7 +151,7 @@ oc patch mcp master --type merge --patch '{"spec":{"paused":false}}'
 
 `/etc/systemd/system/init-interfaces.service` is installed by ignition, so we can just delete it.
 
-`50-gs-ovs-mac-policy-none-link-worker` is a separate MachineConfig so it can be left in place.
+`*-ovs-mac-policy-none-link-worker` is a separate MachineConfig so it can be left in place.
 
 
 
