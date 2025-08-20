@@ -1,0 +1,17 @@
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: master
+  name: 30-disable-init-interfaces-master
+spec:
+  config:
+    ignition:
+      version: 3.2.0
+    storage:
+      files:
+      - contents:
+          source: data:text/plain;charset=utf-8;base64,IyBwcmltYXJ5CiMgc2Vjb25kYXJ5Cg==
+        mode: 420
+        path: "/etc/NetworkManager/system-connections/disable-init-interfaces"
+

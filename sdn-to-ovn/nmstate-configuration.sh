@@ -1,0 +1,43 @@
+#!/bin/bash
+set -eux
+
+# Clean up old config on behalf of mtu-migration
+if ! systemctl -q is-enabled mtu-migration; then
+  echo "Cleaning up left over mtu migration configuration"
+  rm -rf /etc/cno/mtu-migration
+fi
+
+if [ -e /etc/nmstate/openshift/applied ]; then
+  echo "Configuration already applied, exiting"
+  exit 0
+fi
+
+src_path="/etc/nmstate/openshift"
+dst_path="/etc/nmstate"
+hostname=$(hostname -s)
+host_file="${hostname}.yml"
+cluster_file="cluster.yml"
+config_file=""
+if [ -s "$src_path/$host_file" ]; then
+  config_file=$host_file
+elif [ -s "$src_path/$cluster_file" ]; then
+  config_file=$cluster_file
+else
+  echo "No configuration found at $src_path/$host_file or $src_path/$cluster_file"
+  exit 0
+fi
+
+if [ -e "$dst_path/$config_file" ]; then
+  echo "ERROR: File $dst_path/$config_file exists. Refusing to overwrite."
+  exit 1
+fi
+
+# Handle the case where we're migrating from configure-ovs
+ovs-vsctl --timeout=30 --if-exists del-br br-ex
+
+# Handle the case where we're migrating from OpenShift SDN
+ovs-vsctl --timeout=30 --if-exists del-br br0
+
+cp "$src_path/$config_file" /etc/nmstate
+touch /etc/nmstate/openshift/applied
+
