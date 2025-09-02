@@ -41,7 +41,7 @@ function usage() {
     echo "Usage: $0 HOSTNAME ROLE MTU PRIMARY_MAC PRIMARY SECONDARY EXTRA_DHCP_DISABLE"
     echo
     echo "Arguments:"
-    echo "  HOSTNAME            The exact hostname for  /etc/nmstate/openshift/HOSTNAME.yaml"
+    echo "  HOSTNAME            The exact short hostname for  /etc/nmstate/openshift/HOSTNAME.yaml"
     echo "  ROLE                The MachineConfig role of the host"
     echo "  MTU                 Hardcode MTU for all bond interfaces to ensure bond MTU is correct"
     echo "  PRIMARY_MAC         The primary MAC address 00:11:22:33:44:55"
