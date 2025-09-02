@@ -103,10 +103,7 @@ Deleting the NNCP should not change the network, the network config is already a
 Make sure the NNCP is already applied
 ```shell
 oc get nncp
-
-```shell
 oc delete nncp slb
-
 ```
 
 ### 3. Pause MCP
