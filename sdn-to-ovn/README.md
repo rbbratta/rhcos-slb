@@ -182,7 +182,7 @@ oc apply -f 20-mtu-migration-worker.yaml
 Iterate over all the MachineConfig paths and extract the base64 encoded files and manually inspect.
 
 ```shell
-oc get mc -o yaml rendered-master-.... | yq '.spec.config.storage.files[] | select(.path == "/etc/nmstate/openshift/${HOSTNAME}.yml") | .contents.source'  | python3 -c 'import sys ; from urllib.request import urlopen ;  sys.stdout.buffer.write(urlopen(sys.stdin.read()).read())'
+oc get mc -o yaml rendered-master-.... | yq ".spec.config.storage.files[] | select(.path == \"/etc/nmstate/openshift/${HOSTNAME}.yml\") | .contents.source" | python3 -c 'import sys ; from urllib.request import urlopen ;  sys.stdout.buffer.write(urlopen(sys.stdin.read()).read())'
 ```
 
 
