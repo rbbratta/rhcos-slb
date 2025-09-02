@@ -66,7 +66,7 @@ make-br-ex-nmstate.sh master-0 master 1500  00:11:22:33:44:55 enx001122334455 en
 
 The script will generate:
 - `nmstate-"${ROLE}"-"${HOSTNAME}".yml ` raw NMstate
-- `20-br-ex-"${ROLE}"-"${HOSTNAME}".yaml` MachinConfig
+- `20-br-ex-"${ROLE}"-"${HOSTNAME}".yaml` MachineConfig
 
 Verify the `nmstate-"${ROLE}"-"${HOSTNAME}".yml` syntax and `.nmconnections` with:
 
