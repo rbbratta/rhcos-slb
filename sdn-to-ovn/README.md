@@ -177,7 +177,19 @@ oc apply -f 20-mtu-migration-worker.yaml
 
 ```
 
-### 8. Start migration
+### 8.  Optional:  Verify the new rendered MachineConfigs.  
+
+
+*Difficult*
+
+Iterate over all the MachineConfig paths and extract the base64 encoded files and manually inspect.
+
+```
+oc get mc -o yaml rendered-master-.... | yq  '.spec.config.storage.files[] | select(.path == "/etc/nmstate/openshift/${HOSTNAME}.yml") | .contents.source'  | python3 -c 'import sys ; from urllib.request import urlopen ;  sys.stdout.buffer.write(urlopen(sys.stdin.read()).read())'
+```
+
+
+### 9. Start migration
 
 <https://docs.redhat.com/en/documentation/openshift_container_platform/4.16/html/networking/ovn-kubernetes-network-plugin#initiating-limited-live-migration_migrate-from-openshift-sdn>
 
@@ -187,14 +199,14 @@ oc patch Network.config.openshift.io cluster --type='merge' --patch '{"metadata"
 
 ```
 
-### 9. Unpause MCP
+### 10. Unpause MCP
 
 ```shell
 oc patch mcp worker --type merge --patch '{"spec":{"paused":false}}'
 oc patch mcp master --type merge --patch '{"spec":{"paused":false}}'
 ```
 
-### 10. Disable old scripts
+### 11. Disable old scripts
 
 `/etc/systemd/system/init-interfaces.service` is installed by ignition, so we can just delete it.
 
@@ -203,7 +215,7 @@ oc patch mcp master --type merge --patch '{"spec":{"paused":false}}'
 
 
 
-### 11. Replacing the OVS bridge CNI with ovn-k8s-cni-overlay
+### 12. Replacing the OVS bridge CNI with ovn-k8s-cni-overlay
 
 
 Delete the old net-attach-def and add the new net-attach-def and reboot the VMs.
