@@ -165,3 +165,42 @@ oc patch mcp master --type merge --patch '{"spec":{"paused":false}}'
 
 
 
+
+### 11. Replacing the OVS bridge CNI with ovn-k8s-cni-overlay
+
+
+Delete the old net-attach-def and add the new net-attach-def and reboot the VMs.
+
+```yaml
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: <name>
+  namespace: virtualmachines
+spec:
+  config: |-
+    {
+        "cniVersion":"0.3.1",
+        "bridge":"brcnv",
+        "type":"ovs",
+        "vlan":200
+    }
+```
+
+```yaml
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: <name>
+  namespace: virtualmachines
+spec:
+  config: |-
+    {
+        "cniVersion": "0.3.1",
+        "name": "localnet-network",
+        "type": "ovn-k8s-cni-overlay",
+        "topology": "localnet",
+        "vlanID": 200
+    }
+
+```
