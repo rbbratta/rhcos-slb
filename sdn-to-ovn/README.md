@@ -65,10 +65,11 @@ make-br-ex-nmstate.sh master-0 master 1500  00:11:22:33:44:55 enx001122334455 en
 
 Notes:
 
-- hardcode the MTU because DHCP MTU might not propagate
-- delete old `brcnv` interface with IP, `state: absent`
-- always disable DHCP on all other interfaces
-- since we know the PRIMARY MAC, don't use `copy-from-mac:` for br-ex, hardcode
+- Hardcode the MTU because DHCP MTU might not propagate
+- Delete old `brcnv` interface with IP, `state: absent`
+- Delete old `brcnv-if` interface with IP, `state: absent`
+- Always disable DHCP on all other interfaces
+- Since we know the PRIMARY MAC, don't use `copy-from-mac:` for br-ex, hardcode
 - `auto-route-metric: 48` to ensure OVN-K default route always wins.
 
 

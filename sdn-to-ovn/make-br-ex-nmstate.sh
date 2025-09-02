@@ -12,6 +12,7 @@ function make_mc () {
 
 
 # set auto-route-metric to 48 to take priority over any other auto route.
+# original ovs interface was `brcnv` also remove `brcnv-if` alternate.
   cat << EOF
 ovn:
   bridge-mappings:
@@ -43,6 +44,9 @@ interfaces:
       enabled: false
       dhcp: false
       auto-route-metric: 48
+  - name: brcnv-if
+    type: ovs-interface
+    state: absent
   - name: brcnv
     type: ovs-interface
     state: absent
