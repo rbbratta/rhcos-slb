@@ -8,14 +8,21 @@
 The `slb` NNCP creates the `brcnv` bridge with a `bond0` `balance-slb` bond.
 
 
+
+## Prerequisites
+
 Recommended practice to follow before Openshift SDN network plugin migration to OVNKubernetes plugin. 
 https://access.redhat.com/solutions/7070870
+
+
+> If running OpenShift Data Foundations (ODF), refer to [this KCS for health checking prior to migration](https://access.redhat.com/articles/4870821).
+> 
+> Please open a [proactive case prior to your migration](https://access.redhat.com/solutions/3521621) for Red Hat assistance and (as applicable) mention that you use ODF storage for additional validation of storage pools.
 
 
 
 ## Usage
 
-## check for /usr/local/bin/nmstate-configuration.sh
 
 ### 1. Prepare the nmstate for each host
 
