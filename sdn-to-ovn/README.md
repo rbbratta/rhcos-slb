@@ -7,6 +7,12 @@
 
 The `slb` NNCP creates the `brcnv` bridge with a `bond0` `balance-slb` bond.
 
+
+Recommended practice to follow before Openshift SDN network plugin migration to OVNKubernetes plugin. 
+https://access.redhat.com/solutions/7070870
+
+
+
 ## Usage
 
 ## check for /usr/local/bin/nmstate-configuration.sh
