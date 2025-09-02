@@ -98,9 +98,13 @@ Notes:
 
 ### 2. Delete the SLB NNCP
 
+Deleting the NNCP should not change the network, the network config is already applied.
 
+Make sure the NNCP is already applied
 ```shell
 oc get nncp
+
+```shell
 oc delete nncp slb
 
 ```
