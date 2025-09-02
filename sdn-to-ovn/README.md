@@ -61,7 +61,25 @@ function usage() {
 
 make-br-ex-nmstate.sh master-0 master 1500  00:11:22:33:44:55 enx001122334455 enx101122334455 enx201122334455 enx301122334455 enx401122334455 enx501122334455
 
+
 ```
+
+The script will generate:
+- `nmstate-"${ROLE}"-"${HOSTNAME}".yml ` raw NMstate
+- `20-br-ex-"${ROLE}"-"${HOSTNAME}".yaml` MachinConfig
+
+Verify the `nmstate-"${ROLE}"-"${HOSTNAME}".yml` syntax and `.nmconnections` with:
+
+ ```shell
+ nmstatectl gc nmstate-"${ROLE}"-"${HOSTNAME}".yml
+ ```
+
+
+We generate a single MachineConfig per node to enable per-node MachineConfig modifications.
+The NMstate files are copied to every machine in the role. However, writes to `/etc/nmstate/openshift` will not trigger a reboot, allowing these configurations to be adjusted without reboout.
+
+The MachineConfigs can be merged into logical groups if required.
+
 
 Notes:
 
@@ -71,6 +89,11 @@ Notes:
 - Always disable DHCP on all other interfaces
 - Since we know the PRIMARY MAC, don't use `copy-from-mac:` for br-ex, hardcode
 - `auto-route-metric: 48` to ensure OVN-K default route always wins.
+
+
+**Double-check the NMstate**
+
+
 
 
 ### 2. Delete the SLB NNCP
