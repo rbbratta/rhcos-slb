@@ -76,7 +76,7 @@ Verify the `nmstate-"${ROLE}"-"${HOSTNAME}".yml` syntax and `.nmconnections` wit
 
 
 We generate a single MachineConfig per node to enable per-node MachineConfig modifications.
-The NMstate files are copied to every machine in the role. However, writes to `/etc/nmstate/openshift` will not trigger a reboot, allowing these configurations to be adjusted without reboout.
+The NMstate files are copied to every machine in the role. However, writes to `/etc/nmstate/openshift` will not trigger a reboot, allowing these configurations to be adjusted without reboot.
 
 The MachineConfigs can be merged into logical groups if required.
 
