@@ -11,6 +11,7 @@ function make_mc () {
   local SECONDARY=$1; shift
 
 
+# set auto-route-metric to 48 to take priority over any other auto route.
   cat << EOF
 ovn:
   bridge-mappings:
