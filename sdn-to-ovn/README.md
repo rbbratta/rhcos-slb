@@ -161,6 +161,8 @@ First in 4.16.41
 <https://github.com/openshift/machine-config-operator/commits/19d2a0275bf5e566dff786fbc88fe97c69d131d9>
 
 
+Not needed in 4.16.41 or later
+
 ```ini
 # /etc/systemd/system/mtu-migration.service.d/override.conf
 [Unit]
