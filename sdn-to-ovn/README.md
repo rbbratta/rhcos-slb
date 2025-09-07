@@ -110,7 +110,7 @@ Notes:
 
 ### 2. Delete the SLB NNCP
 
-Deleting the NNCP should not change the network, the network config is already applied.
+Deleting the NNCP should not change the network because the configuration has already been applied.
 
 Make sure the NNCP is already applied
 ```shell
