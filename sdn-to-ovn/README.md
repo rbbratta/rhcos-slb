@@ -220,12 +220,32 @@ oc patch mcp worker --type merge --patch '{"spec":{"paused":false}}'
 oc patch mcp master --type merge --patch '{"spec":{"paused":false}}'
 ```
 
-### 11. Disable old scripts
+### 11. Monitor the migration
 
-`/etc/systemd/system/init-interfaces.service` is installed by ignition, so we can just delete it.
 
-`*-ovs-mac-policy-none-link-worker` is a separate MachineConfig so it can be left in place.
+Monitor the `NetworkTypeMigration` conditions
 
+```shell
+$ oc get network.config.openshift.io cluster -o jsonpath='{.status.conditions}' | jq -r '.[] | select(.type | contains("NetworkTypeMigration")) | "  \(.type): \(.status) (\(.reason))"'
+
+  NetworkTypeMigrationMTUReady: Unknown (NetworkTypeMigrationNotInProgress)
+  NetworkTypeMigrationTargetCNIAvailable: Unknown (NetworkTypeMigrationNotInProgress)
+  NetworkTypeMigrationTargetCNIInUse: Unknown (NetworkTypeMigrationNotInProgress)
+  NetworkTypeMigrationOriginalCNIPurged: Unknown (NetworkTypeMigrationNotInProgress)
+  NetworkTypeMigrationInProgress: False (NetworkTypeMigrationCompleted)
+```
+
+Watch the OVN-K pods appear and the SDN pods disappear
+
+```shell
+echo "#### OVN Pods by Node ####"
+oc get pods -n openshift-ovn-kubernetes -l app=ovnkube-node -o jsonpath='{range .items[*]}{.spec.nodeName}{"\n"}{end}' | sort | uniq -c
+
+echo "#### SDN Pods by Node ####"
+oc get pods -n openshift-sdn -l app=sdn -o jsonpath='{range .items[*]}{.spec.nodeName}{"\n"}{end}' | sort | uniq -c
+
+
+```
 
 
 
@@ -267,3 +287,10 @@ spec:
     }
 
 ```
+
+### 13. Disable old scripts
+
+`/etc/systemd/system/init-interfaces.service` is installed by Ignition, so we can just delete it.
+
+`*-ovs-mac-policy-none-link-worker` is a separate MachineConfig so it can be left in place.
+
