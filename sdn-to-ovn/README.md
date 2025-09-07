@@ -240,11 +240,8 @@ $ oc get network.config.openshift.io cluster -o jsonpath='{.status.conditions}' 
 Watch the OVN-K pods appear and the SDN pods disappear
 
 ```shell
-echo "#### OVN Pods by Node ####"
-oc get pods -n openshift-ovn-kubernetes -l app=ovnkube-node -o jsonpath='{range .items[*]}{.spec.nodeName}{"\n"}{end}' | sort | uniq -c
-
-echo "#### SDN Pods by Node ####"
-oc get pods -n openshift-sdn -l app=sdn -o jsonpath='{range .items[*]}{.spec.nodeName}{"\n"}{end}' | sort | uniq -c
+oc get pods -n openshift-ovn-kubernetes -l app=ovnkube-node -o wide
+oc get pods -n openshift-sdn -l app=sdn -o wide
 
 
 ```
