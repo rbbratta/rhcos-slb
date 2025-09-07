@@ -42,9 +42,9 @@ If you use ODF and Ceph, ensure you have enough available nodes in each MachineC
 - Create the nmstate
 
 
-This will generate one MC per node.  For flexibility.
+This will generate one MC per node for flexibility.
 
-For example.
+For example:
 `path: /etc/nmstate/openshift/${HOSTNAME}.yml`
 
 
