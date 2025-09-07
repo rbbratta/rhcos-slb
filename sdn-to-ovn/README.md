@@ -142,10 +142,9 @@ oc apply -f 20-br-ex-worker-9.yaml
 
 ```
 
-### 5. Install new nmstate-configuration.sh to remove old OpenShiftSDN `br0` bridge
+### 5. Install a new `nmstate-configuration.sh` to remove the old OpenShift SDN `br0` bridge
 
-until <https://issues.redhat.com/browse/OCPBUGS-57484> is backported add a custom nmstate-configuration script to delete the leftover
-OpenShiftSDN `br0`
+Until <https://issues.redhat.com/browse/OCPBUGS-57484> is backported, add a custom nmstate-configuration script to delete the leftover OpenShift SDN `br0`.
 
 ```shell
 
