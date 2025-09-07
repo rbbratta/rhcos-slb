@@ -120,6 +120,8 @@ oc delete nncp slb
 
 ### 3. Pause MCP
 
+Pause all the MCPs
+
 ```shell
 oc patch mcp worker --type merge --patch '{"spec":{"paused":true}}'
 oc patch mcp master --type merge --patch '{"spec":{"paused":true}}'
