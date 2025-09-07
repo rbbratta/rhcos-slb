@@ -214,6 +214,9 @@ oc patch Network.config.openshift.io cluster --type='merge' --patch '{"metadata"
 
 ### 10. Unpause MCP
 
+Follow your standard upgrade sequencing and procedures for unpausing MachineConfigPools.
+
+
 ```shell
 oc patch mcp worker --type merge --patch '{"spec":{"paused":false}}'
 oc patch mcp master --type merge --patch '{"spec":{"paused":false}}'
