@@ -167,15 +167,15 @@ oc apply -f 30-disable-init-interfaces-worker.yaml
 
 ```
 
-### 7. Patch MTU Migration
+### 7. Patch MTU migration
 
-Until <https://issues.redhat.com/browse/OCPBUGS-53425> is backported add a systemd override to make mtu-migration service wait for an IP.
+Until <https://issues.redhat.com/browse/OCPBUGS-53425> is backported, add a systemd override to make the `mtu-migration` service wait for an IP.
 
-First in 4.16.41
+First fixed in 4.16.41.
 <https://github.com/openshift/machine-config-operator/commits/19d2a0275bf5e566dff786fbc88fe97c69d131d9>
 
 
-Not needed in 4.16.41 or later
+Not needed in 4.16.41 or later.
 
 ```ini
 # /etc/systemd/system/mtu-migration.service.d/override.conf
