@@ -1,6 +1,13 @@
 
 # Migration from SDN to OVN-K
 
+
+OVN-K live migration is essentially a double-upgrade.  Each node will reboot twice.
+
+
+The live migration workflow is described here: https://github.com/openshift/enhancements/blob/master/enhancements/network/sdn-live-migration.md#workflow-description
+
+
 ## Assumptions
 
 `init-interfaces.service` calls `/var/init-interfaces.sh` which creates the nmconnections
