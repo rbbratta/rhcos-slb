@@ -27,6 +27,11 @@ https://access.redhat.com/solutions/7070870
 > Please open a [proactive case prior to your migration](https://access.redhat.com/solutions/3521621) for Red Hat assistance and (as applicable) mention that you use ODF storage for additional validation of storage pools.
 
 
+## Conditions
+
+
+If you use ODF and Ceph, ensure you have enough available nodes in each MachineConfigPool to maintain a ceph-mon quorum during the node drain and reboot cycle.
+
 
 ## Usage
 
