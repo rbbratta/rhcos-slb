@@ -152,7 +152,7 @@ oc apply -f 20-nmstate-configuration-worker.yaml
 
 ```
 
-source: [nmstate-configuration.sh](./nmstate-configuration.sh)
+Source: [nmstate-configuration.sh](./nmstate-configuration.sh)
 
 ### 6. Disable old services without reboot
 
