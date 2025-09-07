@@ -95,12 +95,12 @@ The MachineConfigs can be merged into logical groups if required.
 
 Notes:
 
-- Hardcode the MTU because DHCP MTU might not propagate
-- Delete old `brcnv` interface with IP, `state: absent`
-- Delete old `brcnv-if` interface with IP, `state: absent`
+- Hard-code the MTU because the DHCP MTU might not propagate
+- Delete the old `brcnv` interface with IP; use `state: absent`
+- Delete the old `brcnv-if` interface with IP; use `state: absent`
 - Always disable DHCP on all other interfaces
-- Since we know the PRIMARY MAC, don't use `copy-from-mac:` for br-ex, hardcode
-- `auto-route-metric: 48` to ensure OVN-K default route always wins.
+- Since we know the PRIMARY MAC, don't use `copy-from-mac:` for br-ex; hard-code it
+- `auto-route-metric: 48` to ensure the OVN-K default route always wins.
 
 
 **Double-check the NMstate**
