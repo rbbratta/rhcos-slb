@@ -59,7 +59,8 @@ function usage() {
     echo "  PRIMARY_MAC         The primary MAC address 00:11:22:33:44:55"
     echo "  PRIMARY             The primary bond port name, enx001122334455"
     echo "  SECONDARY           The secondary bond port name"
-    echo "  EXTRA_DHCP_DISABLE  All the other interfaces that must have DHCP disabled"
+    echo "  LOCALNET_NAME       The name of the localnet network"
+    echo "  EXTRA_DHCP_DISABLE  (Optional) All the other interfaces that must have DHCP disabled"
     exit 1
 }
 
@@ -71,7 +72,7 @@ function usage() {
 
 # only use 'hostname -s'
 
-make-br-ex-nmstate.sh master-0 master 1500  00:11:22:33:44:55 enx001122334455 enx101122334455 enx201122334455 enx301122334455 enx401122334455 enx501122334455
+make-br-ex-nmstate.sh master-0 master 1500  00:11:22:33:44:55 enx001122334455 enx101122334455 localnet-1234 enx201122334455 enx301122334455 enx401122334455 enx501122334455
 
 
 ```

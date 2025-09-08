@@ -9,6 +9,7 @@ function make_mc () {
   local PRIMARY_MAC=$1; shift
   local PRIMARY=$1; shift
   local SECONDARY=$1; shift
+  local LOCALNET_NAME=$1; shift
 
 
 # set auto-route-metric to 48 to take priority over any other auto route.
@@ -16,7 +17,7 @@ function make_mc () {
   cat << EOF
 ovn:
   bridge-mappings:
-    - localnet: localnet-network
+    - localnet: ${LOCALNET_NAME}
       bridge: br-ex
       state: present
 interfaces:
@@ -114,7 +115,7 @@ done
 }
 
 function usage() {
-    echo "Usage: $0 HOSTNAME ROLE MTU PRIMARY_MAC PRIMARY SECONDARY EXTRA_DHCP_DISABLE"
+    echo "Usage: $0 HOSTNAME ROLE MTU PRIMARY_MAC PRIMARY SECONDARY LOCALNET_NAME EXTRA_DHCP_DISABLE"
     echo
     echo "Arguments:"
     echo "  HOSTNAME            The exact short hostname for  /etc/nmstate/openshift/HOSTNAME.yaml"
@@ -123,12 +124,13 @@ function usage() {
     echo "  PRIMARY_MAC         The primary MAC address 00:11:22:33:44:55"
     echo "  PRIMARY             The primary bond port name, enx001122334455"
     echo "  SECONDARY           The secondary bond port name"
-    echo "  EXTRA_DHCP_DISABLE  All the other interfaces that must have DHCP disabled"
+    echo "  LOCALNET_NAME       The name of the localnet network"
+    echo "  EXTRA_DHCP_DISABLE  (Optional) All the other interfaces that must have DHCP disabled"
     exit 1
 }
 
-# Example usage within the script:
-if [ "$#" -le 5 ]; then
+# EXTRA_DHCP_DISABLE is optional
+if [ "$#" -le 6 ]; then
     usage
 fi
 
