@@ -273,7 +273,7 @@ spec:
 apiVersion: k8s.cni.cncf.io/v1
 kind: NetworkAttachmentDefinition
 metadata:
-  name: <name>
+  name: $NAME
   namespace: virtualmachines
 spec:
   config: |-
@@ -282,7 +282,10 @@ spec:
         "name": "localnet-network",
         "type": "ovn-k8s-cni-overlay",
         "topology": "localnet",
-        "vlanID": 200
+        "vlanID": 200,
+        "mtu": 1500,
+        "netAttachDefName": "virtualmachines/$NAME"
+
     }
 
 ```
