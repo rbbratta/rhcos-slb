@@ -128,7 +128,7 @@ function usage() {
 }
 
 # Example usage within the script:
-if [ "$#" -le 6 ]; then
+if [ "$#" -le 5 ]; then
     usage
 fi
 
