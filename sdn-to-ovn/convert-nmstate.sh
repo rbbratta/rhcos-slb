@@ -8,6 +8,8 @@ PTH=${0%/*}
 
 ROLE=$1
 shift
+LOCALNET_NAME=$1
+shift
 IN=$1
 
 HOSTNAME=$(yq '.hostname.running' "${IN}" | cut -d . -f 1)
@@ -18,4 +20,5 @@ SECONDARY=$(yq '.interfaces[] | select(.description == "secondary") |  .name' "$
 EXTRA=$(yq '.interfaces[] | select(.ipv4.enabled == false and .type == "ethernet" and .description == null) | .name'  "${IN}")
 
 
-${PTH}/make-br-ex-nmstate.sh ${HOSTNAME} ${ROLE} ${MTU} ${PRIMARY_MAC} ${PRIMARY} ${SECONDARY} ${EXTRA}
+# don't quote $EXTRA it is multiple interfaces
+"${PTH}"/make-br-ex-nmstate.sh "${HOSTNAME}" "${ROLE}" "${MTU}" "${PRIMARY_MAC}" "${PRIMARY}" "${SECONDARY}" "${LOCALNET_NAME}" ${EXTRA}
