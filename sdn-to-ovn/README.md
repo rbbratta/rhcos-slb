@@ -270,7 +270,8 @@ spec:
     }
 ```
 
-```yaml
+```shell
+cat > localnet-nad.YAML <<EOF
 apiVersion: k8s.cni.cncf.io/v1
 kind: NetworkAttachmentDefinition
 metadata:
@@ -280,7 +281,8 @@ spec:
   config: |-
     {
         "cniVersion": "0.3.1",
-        "name": "localnet-network",
+        "name": "$LOCALNET_NAME",
+        "physicalNetworkName": "$LOCALNET_NAME",
         "type": "ovn-k8s-cni-overlay",
         "topology": "localnet",
         "vlanID": 200,
@@ -288,6 +290,7 @@ spec:
         "netAttachDefName": "virtualmachines/$NAME"
 
     }
+EOF
 
 ```
 
